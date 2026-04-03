@@ -24,3 +24,16 @@ export interface AvatarMenuProps {
 export interface MenuPosition {
   top: number;
 }
+
+export type Question = {
+  id: number;
+  Text: string;
+  Date: string;
+};
+
+export type Answer = {
+  id: number;
+  content: string;
+  user_id: string;
+  created_at: string;
+};
