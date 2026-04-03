@@ -1,25 +1,26 @@
-import { TabAvatar } from "@/components/TabAvatar";
-import { useAuth } from "@/provider/AuthProvider";
+import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { AvatarMenu } from "../../components/AvatarMenu";
 
 export default function Layout() {
-  const { avatarUrl, signOut, uploadAvatar } = useAuth();
-
   return (
     <Tabs>
-      <Tabs.Screen name="index" options={{ title: "Home" }} />
       <Tabs.Screen
-        name="profile"
+        name="index"
         options={{
-          title: "Profile",
-          tabBarIcon: () => <TabAvatar uri={avatarUrl} />,
-          headerRight: () => (
-            <AvatarMenu
-              avatarUrl={avatarUrl}
-              signOut={signOut}
-              uploadAvatar={uploadAvatar}
-            />
+          headerShown: false,
+          tabBarLabel: "Feed",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile/index"
+        options={{
+          headerShown: false,
+          tabBarLabel: "Profile",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
           ),
         }}
       />

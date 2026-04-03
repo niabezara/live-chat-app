@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 import { AuthContextType } from "@/types";
 import { Session, User } from "@supabase/supabase-js";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { Status } from "../app/(tabs)/profile/types";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -10,6 +11,8 @@ function extractUserFields(user: User | null | undefined) {
     email: user?.email ?? null,
     name: user?.user_metadata?.name ?? null,
     avatarUrl: user?.user_metadata?.avatar_url ?? null,
+    bio: user?.user_metadata?.bio ?? null,
+    status: user?.user_metadata?.status as Status,
   };
 }
 
@@ -35,6 +38,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [email, setEmail] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [bio, setBio] = useState<string | null>(null);
+  const [status, setStatus] = useState<Status>("online");
 
   const applySession = (session: Session | null) => {
     const fields = extractUserFields(session?.user);
@@ -42,6 +47,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setEmail(fields.email);
     setName(fields.name);
     setAvatarUrl(fields.avatarUrl);
+    setBio(fields.bio);
+    setStatus(fields.status);
   };
 
   // Seed state from live Supabase user (bypasses stale session metadata)
@@ -53,6 +60,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setEmail(fields.email);
     setName(fields.name);
     setAvatarUrl(fields.avatarUrl);
+    setBio(fields.bio);
+    setStatus(fields.status);
   };
 
   useEffect(() => {
@@ -116,6 +125,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setAvatarUrl(publicUrl);
   };
 
+  const updateBio = async (newBio: string): Promise<void> => {
+    const { error } = await supabase.auth.updateUser({ data: { bio: newBio } });
+    if (error) throw error;
+    setBio(newBio);
+  };
+
+  const updateStatus = async (newStatus: Status): Promise<void> => {
+    const { error } = await supabase.auth.updateUser({
+      data: { status: newStatus },
+    });
+    if (error) throw error;
+    setStatus(newStatus);
+  };
+
   if (loading) return null;
 
   return (
@@ -125,11 +148,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         error,
         email,
         name,
+        status,
         avatarUrl,
+        bio,
         signIn,
         signOut,
         refreshUser,
         uploadAvatar,
+        updateBio,
+        updateStatus,
       }}
     >
       {children}
